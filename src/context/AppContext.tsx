@@ -4,7 +4,7 @@ import { DockerImage, Document } from '@/types';
 
 // Mock admin credentials
 const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'password';
+const ADMIN_PASSWORD = 'dockerlab@123';
 
 interface AppContextType {
   isAuthenticated: boolean;
