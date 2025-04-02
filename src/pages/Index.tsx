@@ -15,7 +15,11 @@ const Index = () => {
         <div className="container mx-auto py-8 px-4">
           <div className="flex justify-between items-center">
             <div className="text-2xl font-bold">DockerLab</div>
-            <Button variant="outline" className="text-white border-white hover:bg-white hover:text-docker-primary" onClick={() => navigate('/admin/login')}>
+            <Button 
+              variant="outline" 
+              className="text-white border-white hover:bg-white hover:text-docker-primary" 
+              onClick={() => navigate('/admin/login')}
+            >
               Admin Portal
             </Button>
           </div>
@@ -24,8 +28,7 @@ const Index = () => {
           <div className="max-w-3xl">
             <h1 className="text-4xl sm:text-5xl font-bold mb-6">Simplify Docker Management for Educational Labs</h1>
             <p className="text-xl mb-8">
-              Access and manage Docker images required for your lab environments with ease.
-              Get all the commands, instructions, and documentation in one place.
+              DockerLab is a web-based platform designed to streamline the management of Docker images and documentation for lab environments. Whether you're an administrator setting up Docker images for students or a student looking for the right commands to run your lab experiments, DockerLab makes the process seamless and efficient.
             </p>
             <Button 
               className="bg-docker-secondary hover:bg-docker-secondary/90 text-white"
