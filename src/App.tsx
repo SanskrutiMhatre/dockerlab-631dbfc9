@@ -28,10 +28,9 @@ const queryClient = new QueryClient
 const App = () => {
 
   useEffect(() => {
-    if (!localStorage.getItem("dockerImages")) {
-    localStorage.setItem(
-      "dockerImages",
-      JSON.stringify([
+    const dockerImages = localStorage.getItem("dockerImages");
+    if (!dockerImages || !Array.isArray(JSON.parse(dockerImages)) || JSON.parse(dockerImages).length === 0) {
+      const initialData = [
         {
           semester: "4",
           subject: "Networking Lab",
@@ -41,14 +40,13 @@ const App = () => {
           instructions: "xhost +",
           notes: "",
           id: "tq35xzdze",
-        },
-      ])
-    );
-
-    window.location.reload();
-  }
-
+        }
+      ];
+  
+      localStorage.setItem("dockerImages", JSON.stringify(initialData));
+    }
   }, []);
+  
   
  return ( <QueryClientProvider client={queryClient}>
     <TooltipProvider>
