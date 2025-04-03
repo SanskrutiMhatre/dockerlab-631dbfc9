@@ -25,7 +25,7 @@ import StudentDocumentList from "./pages/StudentDocumentList";
 
 const queryClient = new QueryClient
 
-const App = () => (
+const App = () => {
   useEffect(() => {
     localStorage.setItem({
          "dockerImages": [
@@ -42,7 +42,7 @@ const App = () => (
     })
   }, [])
   
-  <QueryClientProvider client={queryClient}>
+ return ( <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AppProvider>
         <Toaster />
@@ -78,6 +78,6 @@ const App = () => (
       </AppProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+)}
 
 export default App;
