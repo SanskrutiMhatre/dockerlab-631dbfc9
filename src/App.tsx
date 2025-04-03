@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "@/context/AppContext";
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 // Pages
 import Index from "./pages/Index";
@@ -26,9 +26,9 @@ import StudentDocumentList from "./pages/StudentDocumentList";
 const queryClient = new QueryClient
 
 const App = () => {
-  const [rerender, setRerender] = useState(true);
 
   useEffect(() => {
+    if (!localStorage.getItem("dockerImages")) {
     localStorage.setItem(
       "dockerImages",
       JSON.stringify([
@@ -45,10 +45,11 @@ const App = () => {
       ])
     );
 
-    setTimeout(() => {
-      setRerender(false);
-    }, 1000);
+    window.location.reload();
+  }
+
   }, []);
+  
  return ( <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AppProvider>
