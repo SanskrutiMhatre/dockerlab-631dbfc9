@@ -27,8 +27,7 @@ const queryClient = new QueryClient
 
 const App = () => {
   useEffect(() => {
-    localStorage.setItem({
-         "dockerImages": [
+    localStorage.setItem("dockerImages",  [
         {
             "semester": "4",
             "subject": "Networking Lab",
@@ -39,7 +38,7 @@ const App = () => {
             "id": "tq35xzdze"
         }
     ],
-    })
+    )
   }, [])
   
  return ( <QueryClientProvider client={queryClient}>
