@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { DockerImage, Document } from '@/types';
 
+const url = import.meta.env.VITE_API_BACKEND_URL;
 // Mock admin credentials
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'dockerlab@123';
@@ -25,36 +26,15 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [dockerImages,setDockerImages]=useState([]);
-  // const [dockerImages, setDockerImages] = useState<DockerImage[]>(() => {
-
-  //   let saved='';
-  //   fetch("http://127.0.0.1:8000/api/docker")
-  //           .then(response => response.json())
-  //           .then(data => {
-  //               if (data.success) {
-  //                 console.log("success");
-  //                   saved=data.data;
-  //                   console.log(JSON.stringify(saved));
-  //               } else {
-  //                   console.log("Failed to fetch data");
-  //               }
-  //           })
-  //           .catch(err => {
-  //               console.log("Error fetching data: ");
-  //           });
-  //   // const saved = localStorage.getItem('dockerImages');
-  //   return saved ? JSON.stringify(saved) : [];
-  // });
+ 
   const [documents, setDocuments] = useState<Document[]>(() => {
     const saved = localStorage.getItem('documents');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // useEffect(() => {
-  //   localStorage.setItem('dockerImages', JSON.stringify(dockerImages));
-  // }, [dockerImages]);
+
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/docker")
+    fetch(`${url}docker`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
@@ -65,7 +45,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
       })
       .catch(err => {
-        console.error("Error fetching data:", err);
+        console.log("Error fetching data:");
       });
   }, []);
 
@@ -93,7 +73,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // console.log(newImage);
     // setDockerImages([...dockerImages, newImage]);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/docker", {
+      const response = await fetch(`${url}docker`, {
           method: "POST",
           headers: {
               "Content-Type": "application/json"
@@ -113,7 +93,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const updateDockerImage = (id: string, image: Omit<DockerImage, 'id'>) => {
     const results=dockerImages.map((img) => (img.id === id ? { ...image, id } : img));
     console.log(results);
-    fetch(`http://127.0.0.1:8000/api/docker/${id}`, {
+    fetch(`${url}docker/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -136,7 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteDockerImage = (id: string) => {
-    fetch(`http://127.0.0.1:8000/api/docker/${id}`, {
+    fetch(`${url}docker/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     })
