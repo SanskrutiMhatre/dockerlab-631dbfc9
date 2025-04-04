@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { DockerImage, Document } from '@/types';
 
+const url = import.meta.env.VITE_API_BACKEND_URL;
 // Mock admin credentials
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'dockerlab@123';
@@ -24,18 +25,29 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [dockerImages, setDockerImages] = useState<DockerImage[]>(() => {
-    const saved = localStorage.getItem('dockerImages');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [dockerImages,setDockerImages]=useState([]);
+ 
   const [documents, setDocuments] = useState<Document[]>(() => {
     const saved = localStorage.getItem('documents');
     return saved ? JSON.parse(saved) : [];
   });
 
+
   useEffect(() => {
-    localStorage.setItem('dockerImages', JSON.stringify(dockerImages));
-  }, [dockerImages]);
+    fetch(`${url}docker`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log("Success:", data.data);
+          setDockerImages(data.data); // Update state
+        } else {
+          console.log("Failed to fetch data");
+        }
+      })
+      .catch(err => {
+        console.log("Error fetching data:");
+      });
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('documents', JSON.stringify(documents));
@@ -53,22 +65,71 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsAuthenticated(false);
   };
 
-  const addDockerImage = (image: Omit<DockerImage, 'id'>) => {
+  const addDockerImage = async(image: Omit<DockerImage, 'id'>) => {
     const newImage = {
       ...image,
       id: Math.random().toString(36).substr(2, 9),
     };
-    setDockerImages([...dockerImages, newImage]);
+    // console.log(newImage);
+    // setDockerImages([...dockerImages, newImage]);
+    try {
+      const response = await fetch(`${url}docker`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newImage)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Docker record added successfully!");
+    } 
+} catch (error) {
+    console.log("An error occurred: ");
+}
   };
 
   const updateDockerImage = (id: string, image: Omit<DockerImage, 'id'>) => {
-    setDockerImages(
-      dockerImages.map((img) => (img.id === id ? { ...image, id } : img))
-    );
+    const results=dockerImages.map((img) => (img.id === id ? { ...image, id } : img));
+    console.log(results);
+    fetch(`${url}docker/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(results[0]),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("Record updated successfully");
+          // setDockerImages((prevImages) =>
+          //   prevImages.map((img) => (img.id === id ? { ...data.data } : img))
+          // );
+        } else {
+          console.error("Failed to update record");
+        }
+      })
+      .catch((err) => console.error("Error updating record:", err));
+
   };
 
   const deleteDockerImage = (id: string) => {
-    setDockerImages(dockerImages.filter((img) => img.id !== id));
+    fetch(`${url}docker/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("Record deleted successfully");
+          setDockerImages((prevImages) => prevImages.filter((image) => image.id !== id));
+        } else {
+          console.error("Failed to delete record");
+        }
+      })
+      .catch((err) => console.error("Error deleting record:", err));
   };
 
   const addDocument = (document: Omit<Document, 'id'>) => {
